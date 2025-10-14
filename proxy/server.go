@@ -14,7 +14,10 @@ func StartServer(port int, origin string) {
 	// Stats route
 	r.HandleFunc("/cache/stats", StatsHandler).Methods("GET")
 
-	// Proxy
+	//Clear cashe route
+	r.HandleFunc("/cache/clear", ClearCacheHandler).Methods("POST")
+
+	// Others
 	r.PathPrefix("/").Handler(ProxyHandler(origin))
 
 	addr := fmt.Sprintf(":%d", port)

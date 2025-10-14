@@ -11,6 +11,10 @@ type CacheStats struct {
 	Keys  []string `json:"keys"`
 }
 
+type ClearResponse struct {
+	Message string `json:"message"`
+}
+
 func ProxyHandler(origin string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cacheKey := r.URL.Path + "?" + r.URL.RawQuery
@@ -62,4 +66,13 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(stats)
+}
+
+func ClearCacheHandler(w http.ResponseWriter, r *http.Request) {
+	ClearCache()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ClearResponse{
+		Message: "Cache cleared successfully",
+	})
 }
