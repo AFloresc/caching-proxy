@@ -1,9 +1,15 @@
 package proxy
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 )
+
+type CacheStats struct {
+	Count int      `json:"count"`
+	Keys  []string `json:"keys"`
+}
 
 func ProxyHandler(origin string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -39,4 +45,21 @@ func ProxyHandler(origin string) http.HandlerFunc {
 		w.WriteHeader(resp.StatusCode)
 		w.Write(body)
 	}
+}
+func StatsHandler(w http.ResponseWriter, r *http.Request) {
+	cacheLock.RLock()
+	defer cacheLock.RUnlock()
+
+	keys := make([]string, 0, len(cache))
+	for k := range cache {
+		keys = append(keys, k)
+	}
+
+	stats := CacheStats{
+		Count: len(cache),
+		Keys:  keys,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(stats)
 }

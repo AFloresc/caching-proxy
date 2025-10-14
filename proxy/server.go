@@ -9,8 +9,12 @@ import (
 )
 
 func StartServer(port int, origin string) {
-
 	r := mux.NewRouter()
+
+	// Stats route
+	r.HandleFunc("/cache/stats", StatsHandler).Methods("GET")
+
+	// Proxy
 	r.PathPrefix("/").Handler(ProxyHandler(origin))
 
 	addr := fmt.Sprintf(":%d", port)
