@@ -3,6 +3,7 @@ package proxy
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -20,6 +21,7 @@ func ProxyHandler(origin string) http.HandlerFunc {
 		cacheKey := r.URL.Path + "?" + r.URL.RawQuery
 
 		if cached, ok := GetFromCache(cacheKey); ok {
+			log.Printf("[HIT] %s %s", r.Method, cacheKey)
 			w.Header().Set("X-Cache", "HIT")
 			w.Write(cached)
 			return
